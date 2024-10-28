@@ -29,7 +29,6 @@ dayjs.locale("vi");
 function App() {
 	useDocumentTitle();
 	const [dgTheme] = useTheme(useShallow((stt) => [stt.theme]));
-	const { primaryColor, background, backgroundDark, borderRadius } = useAppTheme();
 
 	useEffect(() => {
 		const htmlClasses = document.querySelector("html")?.classList;
@@ -44,13 +43,10 @@ function App() {
 	return (
 		<ConfigProvider
 			theme={{
-				algorithm: dgTheme === DGThemeType.DARK ? theme.darkAlgorithm : undefined,
+				algorithm: theme.darkAlgorithm,
 				token: {
-					borderRadius: borderRadius,
-					colorPrimary: primaryColor,
-					colorBgBase: dgTheme === DGThemeType.DARK ? backgroundDark : background,
-					colorBgContainer: dgTheme === DGThemeType.DARK ? backgroundDark : background,
-					fontFamily: "JetBrains Mono",
+					borderRadius: 4,
+					// fontFamily: "JetBrains Mono",
 				},
 			}}
 		>

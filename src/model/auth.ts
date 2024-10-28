@@ -15,3 +15,12 @@ export interface LoginRequest {
 export interface LogoutRequest {
 	token: string;
 }
+
+export interface NewSessionResponse {
+	session_id?: string;
+	user_id?: string;
+	output_append_user?: boolean;
+	version?: string;
+	server_id?: string;
+	count_running?: number;
+}

@@ -1,4 +1,4 @@
-import { LoginRequest, LoginResponse, LoginSsoRequest, LogoutRequest, Response } from "@/model";
+import { LoginRequest, LoginResponse, LogoutRequest, NewSessionResponse, Response } from "@/model";
 import { AxiosRequestConfig } from "axios";
 import ApiManager from "./APIManager";
 import Endpoint from "./Endpoint";
@@ -58,12 +58,19 @@ class API {
 		return this.publicClient.post<Response<LoginResponse>>(Endpoint.LOGIN, params);
 	};
 
-	loginSso = (params: LoginSsoRequest): Promise<Response<LoginResponse>> => {
-		return this.publicClient.post<Response<LoginResponse>>(Endpoint.LOGIN_SSO, params);
-	};
-
 	logout = (params: LogoutRequest): Promise<Response<boolean>> => {
 		return this.publicClient.post<Response<boolean>>(Endpoint.LOGOUT, params);
+	};
+	getNewSession = (params: LoginRequest): Promise<NewSessionResponse> => {
+		return this.publicClient.post<NewSessionResponse>(
+			Endpoint.GET_NEW_SESSION,
+			{ session_id: null },
+			{
+				headers: {
+					authorization: "Basic " + btoa(params.username + ":" + params.password),
+				},
+			},
+		);
 	};
 }
 

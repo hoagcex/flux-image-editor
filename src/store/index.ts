@@ -1,5 +1,5 @@
 import { DGThemeType, SideBarType } from "@/common";
-import { GlobalConfig, LoginResponse, SavedAccount, User } from "@/model";
+import { GlobalConfig, NewSessionResponse, SavedAccount, User } from "@/model";
 import { encryptString } from "@/utils";
 import { isNil } from "lodash";
 import Cookies from "universal-cookie";
@@ -11,7 +11,7 @@ const cookies = new Cookies();
 interface AuthUserStore {
 	user?: User;
 	setAuthUser: (user: User) => void;
-	doLogin: (res?: LoginResponse) => void;
+	doLogin: (res?: NewSessionResponse) => void;
 	doLogout: () => void;
 	clear: () => void;
 }
@@ -54,15 +54,12 @@ export const useAuthUserStore = create<AuthUserStore>()(
 	persist(
 		(set) => ({
 			user: undefined,
-			doLogin(res?: LoginResponse) {
-				cookies.set(import.meta.env.REACT_APP_APIKEY_NAME ?? "access_token", res?.access_token, {
+			doLogin(res?: NewSessionResponse) {
+				cookies.set(import.meta.env.REACT_APP_APIKEY_NAME ?? "access_token", res?.session_id, {
 					sameSite: true,
 					path: "/",
-					expires: isNil(res?.expires_in)
-						? new Date(new Date().getTime() + 31536000000)
-						: new Date(Number(res?.expires_in)),
 				});
-				set({ user: res?.user });
+				// set({ user: res?.user });
 			},
 			setAuthUser(user: User) {
 				set({ user: user });

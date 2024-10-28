@@ -1,3 +1,53 @@
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Chrome, Edge, and Safari */
+@layer utilities {
+	/* Chrome, Safari and Opera */
+	.no-scrollbar::-webkit-scrollbar {
+		display: none;
+	}
+
+	.no-scrollbar {
+		-ms-overflow-style: none; /* IE and Edge */
+		scrollbar-width: none; /* Firefox */
+	}
+}
+* {
+	@apply transition-colors duration-[15ms];
+}
+
+body {
+	margin: 0px;
+	padding: 0px;
+	scrollbar-gutter: stable both-edges;
+}
+
+::-webkit-scrollbar {
+	width: 7px;
+	height: 7px;
+}
+
+::-webkit-scrollbar-track {
+	border-radius: 8px;
+	background-color: white;
+}
+
+::-webkit-scrollbar-thumb {
+	border-radius: 8px;
+	background-color: #888;
+}
+* {
+	scrollbar-width: thin;
+	scrollbar-color: #888 white;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+	transition: background-color 600000s 0s, color 600000s 0s;
+}
+input[data-autocompleted] {
+	background-color: transparent !important;
+}
