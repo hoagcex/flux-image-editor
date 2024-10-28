@@ -1,0 +1,4 @@
+.table-striped-rows tr:nth-child(2n) td {
+	background-color: #f1f1f1;
+	@apply dark:bg-[#1D1D1D];
+}
