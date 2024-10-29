@@ -15,7 +15,7 @@ const PageWrapper = (props: PageWrapperProps) => {
 	const { title = "", subTitle = "", children, className, breadcrumb } = props;
 	useDocumentTitle(title);
 	return (
-		<PageTransition className="pt-4 px-8 pb-20 w-full gap-y-4 flex flex-col">
+		<PageTransition className="py-4 px-8 w-full flex flex-1">
 			{isEmpty(title) && isEmpty(subTitle) ? null : (
 				<div
 					className="bg-backgroundPageHeader dark:bg-backgroundPageHeaderDark pt-3 pb-4 px-5"

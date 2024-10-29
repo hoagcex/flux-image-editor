@@ -10,8 +10,7 @@ const getInstance = (baseURL: string, withToken = true) => {
 		headers: {
 			"Content-Type": "application/json",
 			Accept: "*/*",
-			// authorization:
-			// 	"Basic " + btoa(import.meta.env.REACT_APP_SV_USERNAME + ":" + import.meta.env.REACT_APP_SV_KEY),
+			authorization: "Basic " + btoa("gppm:111"),
 		},
 	});
 

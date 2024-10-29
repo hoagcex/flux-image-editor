@@ -41,18 +41,9 @@ const AppRoutes = () => {
 		<BrowserRouter>
 			<Suspense fallback={<AppSpinner />}>
 				<Routes>
-					<Route
-						path={RoutePath.LOGIN}
-						element={
-							<AuthRoute>
-								<Login />
-							</AuthRoute>
-						}
-					/>
+					<Route path={RoutePath.LOGIN} element={<Login />} />
 
-					<Route element={<ProtectedRoute />}>
-						<Route path={RoutePath.HOME} element={<Home />} />
-					</Route>
+					<Route path={RoutePath.HOME} element={<Home />} />
 					<Route path="*" element={<NotFound />} />
 				</Routes>
 			</Suspense>

@@ -61,15 +61,15 @@ class API {
 	logout = (params: LogoutRequest): Promise<Response<boolean>> => {
 		return this.publicClient.post<Response<boolean>>(Endpoint.LOGOUT, params);
 	};
-	getNewSession = (params: LoginRequest): Promise<NewSessionResponse> => {
+	getNewSession = (): Promise<NewSessionResponse> => {
 		return this.publicClient.post<NewSessionResponse>(
 			Endpoint.GET_NEW_SESSION,
 			{ session_id: null },
-			{
-				headers: {
-					authorization: "Basic " + btoa(params.username + ":" + params.password),
-				},
-			},
+			// {
+			// 	headers: {
+			// 		authorization: "Basic " + btoa(params.username + ":" + params.password),
+			// 	},
+			// },
 		);
 	};
 }

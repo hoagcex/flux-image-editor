@@ -6,4 +6,4 @@ export const useLogin = () => useMutation({ mutationFn: (params: LoginRequest) =
 
 export const useLogout = () => useMutation({ mutationFn: (params: LogoutRequest) => API.logout(params) });
 
-export const useGetNewSession = () => useMutation({ mutationFn: (params: LoginRequest) => API.getNewSession(params) });
+export const useGetNewSession = () => useMutation({ mutationFn: () => API.getNewSession() });

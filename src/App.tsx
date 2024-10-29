@@ -57,7 +57,9 @@ function App() {
 						window.location.href = "/";
 					}}
 				>
-					<AppRoutes />
+					<div className="flex flex-1 overflow-auto justify-between">
+						<AppRoutes />
+					</div>
 					<ToastProvider />
 				</ErrorBoundary>
 			</div>
