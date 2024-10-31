@@ -1,4 +1,4 @@
-import { LoginRequest, LoginResponse, LogoutRequest, NewSessionResponse, Response } from "@/model";
+import { LoginRequest, LoginResponse, LogoutRequest, NewSessionResponse, Response, WorkFlowResponse } from "@/model";
 import { AxiosRequestConfig } from "axios";
 import ApiManager from "./APIManager";
 import Endpoint from "./Endpoint";
@@ -71,6 +71,10 @@ class API {
 			// 	},
 			// },
 		);
+	};
+
+	getListWorkFlows = (): Promise<WorkFlowResponse> => {
+		return this.client.post<WorkFlowResponse>(Endpoint.LIST_WORK_FLOWS, {});
 	};
 }
 

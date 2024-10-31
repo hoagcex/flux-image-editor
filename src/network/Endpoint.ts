@@ -4,6 +4,7 @@ const Endpoint = {
 	LOGOUT: "/auth/pass/logout",
 
 	GET_NEW_SESSION: "/GetNewSession",
+	LIST_WORK_FLOWS: "/ComfyListWorkflows",
 };
 
 export default Endpoint;

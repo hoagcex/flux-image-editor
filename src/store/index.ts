@@ -55,6 +55,8 @@ export const useAuthUserStore = create<AuthUserStore>()(
 		(set) => ({
 			user: undefined,
 			doLogin(res?: NewSessionResponse) {
+				console.log("res", res);
+
 				cookies.set(import.meta.env.REACT_APP_APIKEY_NAME ?? "access_token", res?.session_id, {
 					sameSite: true,
 					path: "/",

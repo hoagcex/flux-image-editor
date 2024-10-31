@@ -1,16 +1,18 @@
-import { AntdButton, AppSpinner, BorderWrapper, InputBase, PageWrapper, TextAreaBase } from "@/components";
+import { AntdButton, AppSpinner, InputBase, PageWrapper, TextAreaBase, WorkFlows } from "@/components";
 import { useGetNewSession } from "@/network";
-import { cn } from "@/utils";
-import { Progress, Spin, Typography } from "antd";
+import { useAuthUserStore } from "@/store";
+import { Progress } from "antd";
 import { useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 const Home = () => {
 	const { mutateAsync: getNewSession, isPending } = useGetNewSession();
+	const [doLogin] = useAuthUserStore(useShallow((state) => [state.doLogin]));
 
 	useEffect(() => {
 		getNewSession()
 			.then((res) => {
-				console.log("res", res);
+				doLogin(res);
 			})
 			.catch((error) => {
 				console.log("error", error);
@@ -19,39 +21,30 @@ const Home = () => {
 
 	return (
 		<PageWrapper>
-			{isPending && <AppSpinner fullscreen />}
-			<div className="w-full flex flex-row gap-x-4">
-				<div className="flex flex-col min-w-[320px] max-w-[500px] gap-y-4 gap-x-4">
-					<div>
-						<InputBase className="w-full" />
+			{isPending ? (
+				<AppSpinner fullscreen />
+			) : (
+				<div className="w-full flex flex-row gap-x-4">
+					<div className="flex flex-col min-w-[320px] max-w-[500px] gap-y-4 gap-x-4">
+						<div>
+							<InputBase className="w-full" />
+						</div>
+						<div>
+							<InputBase className="w-full" />
+						</div>
+						<div>
+							<TextAreaBase className="w-full" />
+						</div>
+						<AntdButton type="primary" className="w-full">
+							Tạo
+						</AntdButton>
 					</div>
-					<div>
-						<InputBase className="w-full" />
+					<div className="flex flex-1 flex-col w-full gap-y-2">
+						<WorkFlows />
+						<Progress percent={50} />
 					</div>
-					<div>
-						<TextAreaBase className="w-full" />
-					</div>
-					<AntdButton type="primary" className="w-full">
-						Tạo
-					</AntdButton>
 				</div>
-				<div className="flex flex-1 flex-col w-full gap-y-2">
-					<div
-						style={{
-							borderRadius: 4,
-						}}
-						className={cn(
-							`border-[1px] border-solid border-[#d1d5db] dark:border-[#55585B]`,
-							`focus-within:border-primaryColor dark:focus-within:border-primaryColor`,
-							"min-h-[500px]",
-							"w-[calc(100% - 2rem)] p-4",
-						)}
-					>
-						{/* <Typography.Text>123</Typography.Text> */}
-					</div>
-					<Progress percent={50} />
-				</div>
-			</div>
+			)}
 		</PageWrapper>
 	);
 };

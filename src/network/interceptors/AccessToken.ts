@@ -1,25 +1,27 @@
-import { AxiosError, AxiosRequestHeaders, InternalAxiosRequestConfig } from "axios";
-import { isNil } from "lodash";
 import { useAuthUserStore } from "@/store";
 import { getAccessToken } from "@/utils";
+import { AxiosError, InternalAxiosRequestConfig } from "axios";
+import { isNil } from "lodash";
 
 const doLogout = useAuthUserStore.getState().doLogout;
 
 export function addExtraInfo(config: InternalAxiosRequestConfig) {
 	const token = getAccessToken();
+	console.warn("token", token);
+
 	if (isNil(token)) {
 		doLogout();
 		return Promise.reject();
 	}
 
-	const headers: AxiosRequestHeaders = config.headers;
-	headers.Authorization = "Bearer " + token;
+	config.data = {
+		...config.data,
+		session_id: token,
+	};
 
-	return { ...config, headers: headers };
+	return config;
 }
 
 export function onRejected(error: AxiosError) {
-	// console.log("onRejected", error);
-
 	return Promise.reject(error);
 }
