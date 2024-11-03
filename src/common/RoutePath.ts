@@ -2,6 +2,5 @@ export const RoutePath = {
 	HOME: "/",
 	LOGIN: "/login",
 	FORGOT_PASSWORD: "/forgot-password",
-	LOGIN_DEV: "/login-dev",
-	LOGIN_SSO: "/login-sso",
+	TEXT_2_IMAGE: "/text2image/:name",
 };

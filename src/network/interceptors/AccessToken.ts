@@ -7,7 +7,6 @@ const doLogout = useAuthUserStore.getState().doLogout;
 
 export function addExtraInfo(config: InternalAxiosRequestConfig) {
 	const token = getAccessToken();
-	console.warn("token", token);
 
 	if (isNil(token)) {
 		doLogout();

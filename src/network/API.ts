@@ -1,4 +1,13 @@
-import { LoginRequest, LoginResponse, LogoutRequest, NewSessionResponse, Response, WorkFlowResponse } from "@/model";
+import {
+	CurrentStatusResponse,
+	LoginRequest,
+	LoginResponse,
+	LogoutRequest,
+	NewSessionResponse,
+	Response,
+	WorkFlowListResponse,
+	WorkFlowResponse,
+} from "@/model";
 import { AxiosRequestConfig } from "axios";
 import ApiManager from "./APIManager";
 import Endpoint from "./Endpoint";
@@ -73,8 +82,17 @@ class API {
 		);
 	};
 
-	getListWorkFlows = (): Promise<WorkFlowResponse> => {
-		return this.client.post<WorkFlowResponse>(Endpoint.LIST_WORK_FLOWS, {});
+	getListWorkFlows = (): Promise<WorkFlowListResponse> => {
+		return this.client.post<WorkFlowListResponse>(Endpoint.LIST_WORK_FLOWS, {});
+	};
+	readWorkFlow = (name: string): Promise<WorkFlowResponse> => {
+		return this.client.post<WorkFlowResponse>(Endpoint.READ_WORK_FLOW, { name });
+	};
+	getCurrentStatus = (): Promise<CurrentStatusResponse> => {
+		return this.client.post<CurrentStatusResponse>(Endpoint.GET_CURRENT_STATUS, {});
+	};
+	listModels = (): Promise<CurrentStatusResponse> => {
+		return this.client.post<CurrentStatusResponse>(Endpoint.LIST_MODELS, {});
 	};
 }
 
