@@ -1,36 +1,40 @@
 import { AntdButton, AppSpinner, PageWrapper, TextAreaBase } from "@/components";
-import { useGetCurrentStatus } from "@/network";
 import { cn } from "@/utils";
 import { Progress } from "antd";
 import { useEffect } from "react";
-// import WebSocket from "ws";
+import io from "socket.io-client";
 
-document.cookie = "Authorization=Basic Z3BwbToxMTE=; path=/";
-const socket = new WebSocket("ws://flux.longerthanthelongest.com/API/GenerateText2ImageWS", null, {
-	headers: {
-		["Authorization"]: "Bearer ",
-	},
-});
+const socket = io("http://localhost:8000"); // Replace with your server's URL
 
 const Home = () => {
 	useEffect(() => {
-		socket.onopen = function (event) {
-			console.warn("event", event);
-			// socket.send()
-		};
+		socket.on("connect", () => {
+			console.warn("Connected to server with ID:", socket.id);
+		});
 
-		socket.onmessage = function (event) {
-			console.warn("event", event);
-		};
+		socket.on("flux-msg", (msg) => {
+			console.warn("flux-msg", msg);
+		});
 
-		socket.onclose = function (event) {
-			console.warn("event", event);
-		};
+		socket.on("flux-connect", (msg) => {
+			if (msg === true) {
+				socket.emit("flux-generate");
+				return;
+			}
+		});
+
+		socket.on("flux-generate", (msg) => {
+			console.warn("flux-generate", msg);
+		});
+
+		// return () => {
+		// 	socket.disconnect();
+		// };
 	}, []);
 
-	const { data } = useGetCurrentStatus();
-
-	console.log("data", data);
+	const handleGenerate = () => {
+		socket.emit("flux-connect");
+	};
 
 	return (
 		<PageWrapper>
@@ -42,7 +46,7 @@ const Home = () => {
 						<div>
 							<TextAreaBase className="w-full" label="Prompt" />
 						</div>
-						<AntdButton type="primary" className="w-full">
+						<AntdButton type="primary" className="w-full" onClick={handleGenerate}>
 							Tạo
 						</AntdButton>
 					</div>
