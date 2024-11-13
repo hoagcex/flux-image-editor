@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import API from "../API";
 import { QueryKey } from "./QueryKey";
+import { ListImageRequest } from "@/model";
 
 export const useGetListWorkFlows = () =>
 	useQuery({
@@ -17,4 +18,9 @@ export const useGetCurrentStatus = () =>
 	useQuery({
 		queryFn: () => API.getCurrentStatus(),
 		queryKey: [QueryKey.GET_CURRENT_STATUS],
+	});
+export const useGetListImages = (params: ListImageRequest) =>
+	useQuery({
+		queryFn: () => API.listImages(params),
+		queryKey: [QueryKey.GET_LIST_IMAGES, params],
 	});

@@ -4,6 +4,5 @@ export * from "./AntdDivider";
 export * from "./AntdModal";
 export * from "./AntdPagination";
 export * from "./AntdTable";
-export * from "./AuthWrapper";
 export * from "./BorderWrapper";
 export * from "./PageWrapper";

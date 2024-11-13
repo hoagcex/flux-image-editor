@@ -1,5 +1,7 @@
 import {
 	CurrentStatusResponse,
+	ListImageRequest,
+	ListImageResponse,
 	LoginRequest,
 	LoginResponse,
 	LogoutRequest,
@@ -93,6 +95,9 @@ class API {
 	};
 	listModels = (): Promise<CurrentStatusResponse> => {
 		return this.client.post<CurrentStatusResponse>(Endpoint.LIST_MODELS, {});
+	};
+	listImages = (params: ListImageRequest): Promise<ListImageResponse> => {
+		return this.client.post<ListImageResponse>(Endpoint.LIST_IMAGES, params);
 	};
 }
 

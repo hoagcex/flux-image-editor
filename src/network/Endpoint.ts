@@ -8,6 +8,7 @@ const Endpoint = {
 	READ_WORK_FLOW: "/ComfyReadWorkflow",
 	GET_CURRENT_STATUS: "/GetCurrentStatus",
 	LIST_MODELS: "/ListModels",
+	LIST_IMAGES: "/ListImages",
 };
 
 export default Endpoint;

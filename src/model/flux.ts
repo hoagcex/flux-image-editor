@@ -30,3 +30,19 @@ export interface CurrentStatusResponse {
 	};
 	supported_features: string[];
 }
+
+export interface ListImageRequest {
+	path: string;
+	depth: number;
+	sortBy: string;
+	sortReverse: boolean;
+}
+
+export interface ListImageResponse {
+	files?: GeneratedImageT[];
+}
+
+export interface GeneratedImageT {
+	src?: string;
+	metadata?: string;
+}
