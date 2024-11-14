@@ -89,12 +89,11 @@ const Home = () => {
 								className={cn(
 									`border-[1px] border-solid border-[#d1d5db] dark:border-[#55585B]`,
 									`focus-within:border-primaryColor dark:focus-within:border-primaryColor`,
-									"min-h-[500px] overflow-y-scroll",
+									"min-h-[300px] overflow-y-scroll",
 									"w-[calc(100% - 2rem)] p-4 flex flex-wrap flex-row gap-y-4",
 								)}
 							>
 								<img src={img} className="w-[200px] h-[200px]" />
-								<MaskEditor />
 							</div>
 							<Progress percent={process} status="active" />
 						</div>
@@ -102,6 +101,7 @@ const Home = () => {
 					<ImageList />
 				</div>
 			)}
+			<MaskEditor />
 		</PageWrapper>
 	);
 };

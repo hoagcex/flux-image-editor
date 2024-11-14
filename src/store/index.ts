@@ -30,8 +30,10 @@ interface DGThemeStore {
 }
 
 interface SelectedImageStore {
+	showMaskEdit: boolean;
 	image?: string;
 	setImage: (src: string) => void;
+	setShowMaskEdit: (show: boolean) => void;
 	clear: () => void;
 }
 
@@ -98,11 +100,15 @@ export const useTheme = create<DGThemeStore>()(
 );
 
 export const useSelectedImage = create<SelectedImageStore>((set) => ({
+	showMaskEdit: false,
 	image: SideBarType.HEADER_NAVBAR,
 	setImage(src) {
-		set({ image: src });
+		set({ image: src, showMaskEdit: true });
+	},
+	setShowMaskEdit(show) {
+		set({ showMaskEdit: show });
 	},
 	clear: () => {
-		set({ image: undefined });
+		set({ image: undefined, showMaskEdit: false });
 	},
 }));

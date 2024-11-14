@@ -2,7 +2,9 @@ import { GeneratedImageT } from "@/model";
 import { useGetListImages } from "@/network";
 import { useSelectedImage } from "@/store";
 import { cn } from "@/utils";
-import { Typography } from "antd";
+import { EditOutlined } from "@ant-design/icons";
+import { Button, Dropdown, MenuProps, Typography } from "antd";
+import { BiTrash } from "react-icons/bi";
 import { useShallow } from "zustand/react/shallow";
 
 interface ImageListProps {}
@@ -32,19 +34,41 @@ export const ImageList = (props: ImageListProps) => {
 	);
 };
 
+const items: MenuProps["items"] = [
+	{
+		label: "Delete",
+		key: "delete",
+		icon: <BiTrash />,
+	},
+	{
+		label: "Edit mask",
+		key: "edit",
+		icon: <EditOutlined />,
+	},
+];
 const GeneratedImage = ({ item, setImage }: { item: GeneratedImageT; setImage: (src: string) => void }) => {
 	const handleClick = () => {
 		setImage(encodeURI(import.meta.env.REACT_APP_BASE_URL + "View/local/" + item.src) + "?preview=true");
 	};
+	const handleMenuClick: MenuProps["onClick"] = (e) => {
+		if (e.key === "edit") {
+			handleClick();
+			return;
+		}
+	};
 
 	return (
-		<div onClick={handleClick} className="w-36 relative">
+		<div className="w-36 relative">
 			<img
 				className="w-36 rounded-md"
 				src={encodeURI(import.meta.env.REACT_APP_BASE_URL + "View/local/" + item.src) + "?preview=true"}
 			/>
 			<Typography.Text className="text-[10px]">{item.src}</Typography.Text>
-			<div className="absolute top-1 right-1 text-white">☰</div>
+			<Dropdown menu={{ items, onClick: handleMenuClick }} placement="bottomLeft" trigger={["click"]}>
+				<Button className="absolute top-1 right-1 text-white cursor-pointer" variant="text" color="default">
+					☰
+				</Button>
+			</Dropdown>
 		</div>
 	);
 };
