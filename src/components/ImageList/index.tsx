@@ -65,7 +65,7 @@ const GeneratedImage = ({ item, setImage }: { item: GeneratedImageT; setImage: (
 			/>
 			<Typography.Text className="text-[10px]">{item.src}</Typography.Text>
 			<Dropdown menu={{ items, onClick: handleMenuClick }} placement="bottomLeft" trigger={["click"]}>
-				<Button className="absolute top-1 right-1 text-white cursor-pointer" variant="text" color="default">
+				<Button className="absolute top-0 right-0 text-white cursor-pointer" variant="text" color="default">
 					☰
 				</Button>
 			</Dropdown>
