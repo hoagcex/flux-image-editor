@@ -4,11 +4,12 @@ import { Socket } from "socket.io-client";
 
 interface PromptFormProps {
 	socket?: Socket;
+	loading?: boolean;
 }
 
 export const PromptForm = forwardRef((props: PromptFormProps, ref) => {
 	const [prompt, setPrompt] = useState("");
-	const { socket } = props;
+	const { socket, loading = false } = props;
 
 	const onSubmit = () => {
 		socket?.emit("flux-connect");
@@ -27,14 +28,9 @@ export const PromptForm = forwardRef((props: PromptFormProps, ref) => {
 	return (
 		<>
 			<div>
-				<TextAreaBase
-					className="w-full"
-					label="Prompt"
-					onChange={(e) => setPrompt(e.target.value)}
-					itemRef=""
-				/>
+				<TextAreaBase className="w-full" label="Input" onChange={(e) => setPrompt(e.target.value)} itemRef="" />
 			</div>
-			<AntdButton type="primary" className="w-full" onClick={onSubmit}>
+			<AntdButton type="primary" className="w-full" onClick={onSubmit} loading={loading}>
 				Tạo
 			</AntdButton>
 		</>
