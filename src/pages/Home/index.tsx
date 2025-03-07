@@ -25,14 +25,15 @@ interface GenProcess {
 
 const Home = () => {
 	const [genImg, setGenImg] = useState("");
-	// "https://flux.longerthanthelongest.com/View/local/raw/2024-12-02/0652-photograph%20of%20a%20legible%20but%20stylized%20and-unknown-1504658100.png",
 	const [process, setProcess] = useState<number>(0);
 	const [loading, setLoading] = useState(false);
 	const promptRef = useRef(null);
 
 	useEffect(() => {
 		const onFluxConnect = (res: boolean) => handleFluxGenerate(res);
-		const onFluxGenerate = (res: FluxGenResponse) => {
+		const onFluxGenerate = (res: boolean) => {
+			// console.log("flux-generate", res);
+
 			if (res === false) setLoading(false);
 		};
 
@@ -52,7 +53,7 @@ const Home = () => {
 	}, []);
 
 	const handleFluxGenerate = (res: boolean) => {
-		// console.log("handleFluxGenerate", res);
+		// console.log("flux-connect", res);
 
 		if (res === false) {
 			setLoading(false);
@@ -62,7 +63,9 @@ const Home = () => {
 		if (res === true) {
 			const request = {
 				prompt: promptRef.current?.getValue(),
+				enhancePrompt: promptRef.current?.getEnhancePrompt(),
 			};
+
 			socket.emit("flux-generate", JSON.stringify(request));
 			setLoading(true);
 			return;
@@ -70,7 +73,7 @@ const Home = () => {
 	};
 
 	const handleFluxEvent = (res: FluxGenResponse) => {
-		// console.log("handleFluxEvent", res);
+		// console.log("flux-msg", res);
 		if (res.socket_intention === "close") {
 			setLoading(false);
 			return;
@@ -94,7 +97,7 @@ const Home = () => {
 			) : (
 				<div className="w-full flex flex-col">
 					<div className="w-full flex flex-row gap-x-4">
-						<div className="flex flex-col min-w-[450px] max-w-[750px] gap-y-4 gap-x-4">
+						<div className="flex flex-col min-w-[400px] max-w-[750px] gap-y-4 gap-x-4">
 							<PromptForm ref={promptRef} socket={socket} loading={loading} />
 						</div>
 						<div className="flex flex-1 flex-col w-full gap-y-2">
@@ -106,7 +109,7 @@ const Home = () => {
 									`border-[1px] border-solid border-[#d1d5db] dark:border-[#55585B]`,
 									`focus-within:border-primaryColor dark:focus-within:border-primaryColor`,
 									"min-h-[300px] overflow-y-scroll",
-									"w-[calc(100% - 2rem)] p-4 flex flex-wrap flex-row gap-y-4",
+									"w-[calc(100% - 2rem)] p-4 flex flex-wrap flex-row gap-y-4 justify-center",
 								)}
 							>
 								<img src={genImg} className="w-auto h-full max-h-[750px]" />
