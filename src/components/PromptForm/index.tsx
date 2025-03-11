@@ -4,8 +4,9 @@ import { forwardRef, useImperativeHandle, useState } from "react";
 import { Socket } from "socket.io-client";
 
 interface PromptFormProps {
-	socket?: Socket;
+	socket: Socket;
 	loading?: boolean;
+	setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const PromptForm = forwardRef((props: PromptFormProps, ref) => {
@@ -15,10 +16,19 @@ export const PromptForm = forwardRef((props: PromptFormProps, ref) => {
 		setEnhancePrompt(checked);
 	};
 
-	const { socket, loading = false } = props;
+	const { socket, loading = false, setLoading } = props;
 
 	const onSubmit = () => {
-		socket?.emit("flux-connect");
+		// socket?.emit("flux-connect");
+
+		const request = {
+			prompt: prompt,
+			enhancePrompt: enhancePrompt,
+			edit: false,
+		};
+
+		socket.emit("flux-generate", JSON.stringify(request));
+		setLoading?.(true);
 	};
 
 	useImperativeHandle(

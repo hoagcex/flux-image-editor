@@ -1,5 +1,6 @@
 export * from "./Animation";
 export * from "./AppSpinner";
+export * from "./ImageGen";
 export * from "./ImageList";
 export * from "./Input";
 export * from "./MaskEditor";
