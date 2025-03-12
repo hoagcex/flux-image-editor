@@ -3,8 +3,8 @@ import { useSelectedImage } from "@/store";
 import { cn } from "@/utils";
 import { EditOutlined } from "@ant-design/icons";
 import { Button, Dropdown, MenuProps, Progress } from "antd";
-import { isNil, round } from "lodash";
-import { useEffect, useRef, useState } from "react";
+import { isEmpty, isNil, round } from "lodash";
+import { useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
 import { useShallow } from "zustand/react/shallow";
 
@@ -41,11 +41,9 @@ export const ImageGen = (props: ImageGenProps) => {
 	const [genImg, setGenImg] = useState("");
 	const [process, setProcess] = useState<number>(0);
 	const [loading, setLoading] = useState(false);
-	const promptRef = useRef(null);
 	const [setImage] = useSelectedImage(useShallow((stt) => [stt.setImage]));
 
 	useEffect(() => {
-		const onFluxConnect = (res: boolean) => handleFluxGenerate(res);
 		const onFluxGenerate = (res: boolean) => {
 			console.log("flux-generate", res);
 			if (res === false) setLoading(false);
@@ -55,37 +53,14 @@ export const ImageGen = (props: ImageGenProps) => {
 			console.log("Connected to server with ID:", socket.id);
 		});
 
-		socket.on("flux-connect", onFluxConnect);
 		socket.on("flux-generate", onFluxGenerate);
 		socket.on("flux-msg", handleFluxEvent);
 
 		return () => {
-			socket.off("flux-connect", onFluxConnect);
 			socket.off("flux-generate", onFluxGenerate);
 			socket.off("flux-msg", handleFluxEvent);
 		};
 	}, []);
-
-	const handleFluxGenerate = (res: boolean) => {
-		console.log("flux-connect", res);
-
-		if (res === false) {
-			setLoading(false);
-			return;
-		}
-
-		if (res === true) {
-			const request = {
-				prompt: promptRef.current?.getValue(),
-				enhancePrompt: promptRef.current?.getEnhancePrompt(),
-				edit: false,
-			};
-
-			socket.emit("flux-generate", JSON.stringify(request));
-			setLoading(true);
-			return;
-		}
-	};
 
 	const handleFluxEvent = (res: FluxGenResponse) => {
 		console.log("flux-msg", res);
@@ -119,7 +94,7 @@ export const ImageGen = (props: ImageGenProps) => {
 		<div className="w-full flex flex-col">
 			<div className="w-full flex flex-row gap-x-4">
 				<div className="flex flex-col min-w-[400px] max-w-[750px] gap-y-4 gap-x-4">
-					<PromptForm ref={promptRef} socket={socket} loading={loading} setLoading={setLoading} />
+					<PromptForm socket={socket} loading={loading} setLoading={setLoading} />
 				</div>
 				<div className="flex flex-1 flex-col w-full gap-y-2">
 					<div
@@ -133,21 +108,23 @@ export const ImageGen = (props: ImageGenProps) => {
 							"w-[calc(100% - 2rem)] p-4 flex flex-wrap flex-row gap-y-4 justify-center",
 						)}
 					>
-						<div className="relative">
-							<Dropdown
-								menu={{ items, onClick: handleMenuClick }}
-								placement="bottomLeft"
-								trigger={["click"]}
-							>
-								<Button
-									className="absolute top-0 left-0 text-white cursor-pointer"
-									variant="outlined"
-									color="default"
+						{isEmpty(genImg) ? undefined : (
+							<div className="relative">
+								<Dropdown
+									menu={{ items, onClick: handleMenuClick }}
+									placement="bottomLeft"
+									trigger={["click"]}
 								>
-									☰
-								</Button>
-							</Dropdown>
-						</div>
+									<Button
+										className="absolute top-0 left-0 text-white cursor-pointer"
+										variant="outlined"
+										color="default"
+									>
+										☰
+									</Button>
+								</Dropdown>
+							</div>
+						)}
 						<img src={genImg} className="w-auto h-full max-h-[750px]" />
 					</div>
 					<Progress percent={process} status="active" />

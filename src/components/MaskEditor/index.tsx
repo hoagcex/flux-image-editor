@@ -53,6 +53,9 @@ export const MaskEditor = (props: MaskEditorProps) => {
 			edit: true,
 		};
 
+		// console.log(request);
+		// console.log(JSON.stringify(request));
+
 		socket.emit("flux-generate", JSON.stringify(request));
 	};
 

@@ -1,6 +1,6 @@
 import { AntdButton, TextAreaBase } from "@/components";
 import { Switch, Typography } from "antd";
-import { forwardRef, useImperativeHandle, useState } from "react";
+import { useState } from "react";
 import { Socket } from "socket.io-client";
 
 interface PromptFormProps {
@@ -9,7 +9,7 @@ interface PromptFormProps {
 	setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const PromptForm = forwardRef((props: PromptFormProps, ref) => {
+export const PromptForm = (props: PromptFormProps) => {
 	const [prompt, setPrompt] = useState("");
 	const [enhancePrompt, setEnhancePrompt] = useState(true);
 	const onChange = (checked: boolean) => {
@@ -19,8 +19,6 @@ export const PromptForm = forwardRef((props: PromptFormProps, ref) => {
 	const { socket, loading = false, setLoading } = props;
 
 	const onSubmit = () => {
-		// socket?.emit("flux-connect");
-
 		const request = {
 			prompt: prompt,
 			enhancePrompt: enhancePrompt,
@@ -30,19 +28,6 @@ export const PromptForm = forwardRef((props: PromptFormProps, ref) => {
 		socket.emit("flux-generate", JSON.stringify(request));
 		setLoading?.(true);
 	};
-
-	useImperativeHandle(
-		ref,
-		() => ({
-			getValue() {
-				return prompt;
-			},
-			getEnhancePrompt() {
-				return enhancePrompt;
-			},
-		}),
-		[prompt, enhancePrompt],
-	);
 
 	return (
 		<>
@@ -58,4 +43,4 @@ export const PromptForm = forwardRef((props: PromptFormProps, ref) => {
 			</AntdButton>
 		</>
 	);
-});
+};
