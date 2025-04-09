@@ -1,28 +1,14 @@
 import { PromptForm } from "@/components";
-import { useSelectedImage } from "@/store";
+import { FluxGenerateResp, FluxGenRequest, FluxGenResponse } from "@/model";
+import { useGenLoadingImage, useImagesTemplate, useSelectedImage } from "@/store";
 import { cn } from "@/utils";
 import { EditOutlined } from "@ant-design/icons";
 import { Button, Dropdown, MenuProps, Progress } from "antd";
 import { isEmpty, isNil, round } from "lodash";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Socket } from "socket.io-client";
 import { useShallow } from "zustand/react/shallow";
-
-interface FluxGenResponse {
-	image?: string;
-	batch_index?: string;
-	metadata?: string;
-	gen_progress?: GenProcess;
-	keep_alive?: boolean;
-	socket_intention?: "close" | "open";
-}
-
-interface GenProcess {
-	batch_index?: string;
-	overall_percent?: number;
-	current_percent?: number;
-	preview?: string;
-}
+import { ImageTemplateList } from "../ImageTemplateList";
 
 const items: MenuProps["items"] = [
 	{
@@ -40,13 +26,24 @@ export const ImageGen = (props: ImageGenProps) => {
 	const { socket } = props;
 	const [genImg, setGenImg] = useState("");
 	const [process, setProcess] = useState<number>(0);
-	const [loading, setLoading] = useState(false);
 	const [setImage] = useSelectedImage(useShallow((stt) => [stt.setImage]));
 
+	const [setLoading, setGen] = useGenLoadingImage(useShallow((stt) => [stt.setLoading, stt.setGen]));
+	const promptRef = useRef("");
+	const stepRef = useRef(1);
+
 	useEffect(() => {
-		const onFluxGenerate = (res: boolean) => {
+		const onFluxGenerate = (res: FluxGenerateResp) => {
 			console.log("flux-generate", res);
-			if (res === false) setLoading(false);
+			if (res.status === false) {
+				setLoading(false);
+				return;
+			}
+			if (res.status && !isNil(res.prompt)) {
+				promptRef.current = res.prompt;
+				setGen(res.prompt);
+				return;
+			}
 		};
 
 		socket.on("connect", () => {
@@ -66,7 +63,7 @@ export const ImageGen = (props: ImageGenProps) => {
 		console.log("flux-msg", res);
 		if (res.socket_intention === "close") {
 			setLoading(false);
-			return;
+			onContinueGen();
 		}
 
 		if (!isNil(res.gen_progress)) {
@@ -90,11 +87,31 @@ export const ImageGen = (props: ImageGenProps) => {
 		}
 	};
 
+	const onContinueGen = () => {
+		if (stepRef.current > 1) return;
+		setTimeout(() => {
+			const request: FluxGenRequest = {
+				prompt: promptRef.current,
+				enhancePrompt: false,
+				edit: false,
+				width: 128 * 2,
+				height: 128 * 2,
+			};
+			console.log("onContinueGen-request", request);
+			socket.emit("flux-generate", JSON.stringify(request));
+
+			stepRef.current = stepRef.current + 1;
+			setLoading(true);
+		}, 1000);
+
+		return;
+	};
+
 	return (
 		<div className="w-full flex flex-col">
 			<div className="w-full flex flex-row gap-x-4">
 				<div className="flex flex-col min-w-[400px] max-w-[750px] gap-y-4 gap-x-4">
-					<PromptForm socket={socket} loading={loading} setLoading={setLoading} />
+					<PromptForm socket={socket} />
 				</div>
 				<div className="flex flex-1 flex-col w-full gap-y-2">
 					<div
@@ -125,11 +142,12 @@ export const ImageGen = (props: ImageGenProps) => {
 								</Dropdown>
 							</div>
 						)}
-						<img src={genImg} className="w-auto h-full max-h-[750px]" />
+						<img src={genImg} className="w-auto h-full max-h-[512px] min-h-[512px]" />
 					</div>
 					<Progress percent={process} status="active" />
 				</div>
 			</div>
+			<ImageTemplateList />
 		</div>
 	);
 };

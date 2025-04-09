@@ -1,5 +1,5 @@
-import { DGThemeType, SideBarType } from "@/common";
-import { GlobalConfig, NewSessionResponse, SavedAccount, User } from "@/model";
+import { SideBarType } from "@/common";
+import { ImageTemplate, NewSessionResponse, User } from "@/model";
 import Cookies from "universal-cookie";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
@@ -11,21 +11,6 @@ interface AuthUserStore {
 	setAuthUser: (user: User) => void;
 	doLogin: (res?: NewSessionResponse) => void;
 	doLogout: () => void;
-	clear: () => void;
-}
-
-interface DGThemeColorConfig {
-	primaryColor?: string;
-	borderRadius?: number;
-}
-interface DGThemeStore {
-	theme: DGThemeType;
-	sidebar: SideBarType;
-	colorConfig?: DGThemeColorConfig;
-	setTheme: (theme?: DGThemeType) => void;
-	setUseSidebar: (sidebarStyle?: SideBarType) => void;
-	setColorConfig: (colorConfig?: DGThemeColorConfig) => void;
-	clearColorConfig: () => void;
 	clear: () => void;
 }
 
@@ -67,38 +52,6 @@ export const useAuthUserStore = create<AuthUserStore>()(
 	),
 );
 
-export const useTheme = create<DGThemeStore>()(
-	persist(
-		(set, get) => ({
-			theme: DGThemeType.DARK,
-			sidebar: SideBarType.HEADER_NAVBAR,
-			colorConfig: undefined,
-			setTheme(theme) {
-				const currentTheme = get().theme;
-				if (theme === currentTheme) return;
-				set({ theme: theme });
-			},
-			setUseSidebar(sidebarStyle) {
-				set({ sidebar: sidebarStyle });
-			},
-			setColorConfig(colorConfig) {
-				set({ colorConfig: colorConfig });
-			},
-			clearColorConfig() {
-				set({ colorConfig: undefined });
-			},
-			clear: () => {
-				set({ theme: DGThemeType.LIGHT });
-				set({ sidebar: SideBarType.HEADER_NAVBAR });
-			},
-		}),
-		{
-			name: STORE_CONST.APP_THEME,
-			storage: createJSONStorage(() => localStorage),
-		},
-	),
-);
-
 export const useSelectedImage = create<SelectedImageStore>((set) => ({
 	showMaskEdit: false,
 	image: SideBarType.HEADER_NAVBAR,
@@ -110,5 +63,76 @@ export const useSelectedImage = create<SelectedImageStore>((set) => ({
 	},
 	clear: () => {
 		set({ image: undefined, showMaskEdit: false });
+	},
+}));
+
+interface GenLoadingStore {
+	loading: boolean;
+	prompt?: string;
+	sessionId?: string;
+	setGen: (prompt?: string, sessionId?: string) => void;
+	setLoading: (loading?: boolean) => void;
+	clear: () => void;
+}
+export const useGenLoadingImage = create<GenLoadingStore>((set) => ({
+	loading: false,
+	prompt: undefined,
+	sessionId: undefined,
+	setGen(prompt?: string, sessionId?: string) {
+		set({ prompt: prompt, sessionId: sessionId, loading: true });
+	},
+	setLoading(src) {
+		set({ loading: src });
+	},
+	clear: () => {
+		set({ loading: false, sessionId: undefined, prompt: undefined });
+	},
+}));
+
+interface ImageTemplateProps {
+	images?: ImageTemplate[];
+	setImages: (images?: ImageTemplate[]) => void;
+	pushImage: (image: ImageTemplate) => void;
+	clear: () => void;
+}
+
+export const useImagesTemplate = create<ImageTemplateProps>((set, get) => ({
+	images: [
+		{
+			name: "test",
+			width: 128,
+			height: 128,
+			description: "Test image",
+			imageSrc:
+				"https://flux.longerthanthelongest.com/View/local/raw/2025-04-09/0336-A%20photorealistic%20close-up%20of%20a%20single%20de-unknown-43.png",
+		},
+		{
+			name: "facebookCover",
+			width: 820,
+			height: 312,
+			description: "Ảnh bìa fanpage",
+			imageSrc:
+				"https://flux.longerthanthelongest.com/View/local/raw/2025-04-09/0336-A%20photorealistic%20close-up%20of%20a%20single%20de-unknown-43.png",
+		},
+		{
+			name: "zaloCover",
+			width: 1000,
+			height: 500,
+			description: "Ảnh bìa Zalo cá nhân",
+			imageSrc:
+				"https://flux.longerthanthelongest.com/View/local/raw/2025-04-09/0336-A%20photorealistic%20close-up%20of%20a%20single%20de-unknown-43.png",
+		},
+	],
+	setImages(images?: ImageTemplate[]) {
+		set({ images: images });
+	},
+	pushImage(image?: ImageTemplate) {
+		if (image) {
+			const images = [...(get().images ?? []), image];
+			set({ images: images });
+		}
+	},
+	clear() {
+		set({ images: undefined });
 	},
 }));

@@ -1,5 +1,4 @@
 import { AxiosError, AxiosResponse } from "axios";
-import { ServerCode } from "@/common";
 import { Response } from "@/model";
 import { useAuthUserStore } from "@/store";
 const doLogout = useAuthUserStore.getState().doLogout;
@@ -7,7 +6,7 @@ const doLogout = useAuthUserStore.getState().doLogout;
 export function responseSuccess(response: AxiosResponse<Response<any>>) {
 	const code = response.data.statusCode;
 
-	if (code === ServerCode.FORBIDDEN) {
+	if (code === 403) {
 		doLogout();
 		return Promise.reject();
 	}

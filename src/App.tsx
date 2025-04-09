@@ -1,8 +1,6 @@
-import { DGThemeType } from "@/common";
 import { useDocumentTitle } from "@/hook";
 import ErrorPage from "@/pages/ErrorPage";
 import { AppRoutes } from "@/routes";
-import { useTheme } from "@/store";
 import { ConfigProvider, theme } from "antd";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
@@ -14,7 +12,6 @@ import weekOfYear from "dayjs/plugin/weekOfYear";
 import weekYear from "dayjs/plugin/weekYear";
 import { useEffect } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { useShallow } from "zustand/react/shallow";
 import "./App.css";
 import { ToastProvider } from "./components";
 
@@ -28,17 +25,10 @@ dayjs.locale("vi");
 
 function App() {
 	useDocumentTitle();
-	const [dgTheme] = useTheme(useShallow((stt) => [stt.theme]));
 
 	useEffect(() => {
-		const htmlClasses = document.querySelector("html")?.classList;
-		if (dgTheme === DGThemeType.DARK) {
-			htmlClasses?.remove(DGThemeType.LIGHT);
-		} else {
-			htmlClasses?.remove(DGThemeType.DARK);
-		}
-		document.querySelector("html")?.classList.add(dgTheme);
-	}, [dgTheme]);
+		document.querySelector("html")?.classList.add("dark");
+	}, []);
 
 	return (
 		<ConfigProvider

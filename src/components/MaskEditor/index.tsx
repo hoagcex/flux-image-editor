@@ -1,10 +1,10 @@
-import { useSelectedImage } from "@/store";
+import { useGenLoadingImage, useSelectedImage } from "@/store";
 import { Button, Modal, Slider } from "antd";
-import React, { useEffect, useState } from "react";
-import { MaskEditor as ME, toMask, fetchImageAsBase64 } from "react-mask-editor";
+import React, { useState } from "react";
+import { fetchImageAsBase64, MaskEditor as ME, toMask } from "react-mask-editor";
+import { Socket } from "socket.io-client";
 import { useShallow } from "zustand/react/shallow";
 import { TextAreaBase } from "../Input";
-import { Socket } from "socket.io-client";
 
 interface MaskEditorProps {
 	socket: Socket;
@@ -14,26 +14,13 @@ export const MaskEditor = (props: MaskEditorProps) => {
 	const { socket } = props;
 	const [cursorSize, setCursorSize] = useState(10);
 	const [maskImage, setMaskImage] = useState<string | undefined>(undefined);
-	const [initImage, setInitImage] = useState<string | undefined>(undefined);
 	const canvas = React.useRef<HTMLCanvasElement>(null);
-	const [image, showMaskEdit, clear] = useSelectedImage(
-		useShallow((stt) => [stt.image, stt.showMaskEdit, stt.clear]),
+	const [image, showMaskEdit, setShowMaskEdit, clear] = useSelectedImage(
+		useShallow((stt) => [stt.image, stt.showMaskEdit, stt.setShowMaskEdit, stt.clear]),
 	);
 	const [prompt, setPrompt] = useState("");
 
-	useEffect(() => {
-		if (showMaskEdit) {
-			const getInitImage = async () => {
-				const init = await fetchImageAsBase64(image ?? "");
-				setInitImage(init);
-			};
-
-			getInitImage();
-			return;
-		}
-		setInitImage(undefined);
-		setMaskImage(undefined);
-	}, []);
+	const [loading, setLoading] = useGenLoadingImage(useShallow((stt) => [stt.loading, stt.setLoading]));
 
 	const handleMouseMove = () => {
 		if (canvas.current) {
@@ -49,12 +36,14 @@ export const MaskEditor = (props: MaskEditorProps) => {
 		const request = {
 			prompt: prompt,
 			maskimage: maskImage,
-			initimage: initImage,
+			initimage: await fetchImageAsBase64(image ?? ""),
 			edit: true,
 		};
 
-		// console.log(request);
-		// console.log(JSON.stringify(request));
+		setShowMaskEdit(false);
+		setLoading(true);
+
+		console.log("request", request);
 
 		socket.emit("flux-generate", JSON.stringify(request));
 	};
@@ -71,7 +60,6 @@ export const MaskEditor = (props: MaskEditorProps) => {
 						maskColor="#fff"
 						maskBlendMode="screen"
 					/>
-					{/* <img src={maskImage} /> */}
 				</div>
 				<TextAreaBase className="w-full" label="Input" onChange={(e) => setPrompt(e.target.value)} itemRef="" />
 			</div>
@@ -80,7 +68,7 @@ export const MaskEditor = (props: MaskEditorProps) => {
 				<Button danger type="primary" onClick={handleCancel}>
 					Hủy
 				</Button>
-				<Button type="primary" onClick={onSubmit}>
+				<Button type="primary" onClick={onSubmit} loading={loading}>
 					Submit
 				</Button>
 			</div>

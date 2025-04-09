@@ -46,3 +46,48 @@ export interface GeneratedImageT {
 	src?: string;
 	metadata?: string;
 }
+
+export interface FluxGenerateResp {
+	seed?: string;
+	fluxguidace?: string;
+	steps?: string;
+	width?: number;
+	height?: number;
+	images?: number;
+	model?: string;
+	session_id?: string;
+	prompt?: string;
+	status?: boolean;
+}
+
+export interface FluxGenResponse {
+	image?: string;
+	batch_index?: string;
+	metadata?: string;
+	gen_progress?: GenProcess;
+	keep_alive?: boolean;
+	socket_intention?: "close" | "open";
+}
+export interface GenProcess {
+	batch_index?: string;
+	overall_percent?: number;
+	current_percent?: number;
+	preview?: string;
+}
+
+export interface FluxGenRequest {
+	prompt: string;
+	sessionId?: string;
+	enhancePrompt?: boolean;
+	edit?: boolean;
+	width: number;
+	height: number;
+}
+
+export interface ImageTemplate {
+	name: string;
+	width: number;
+	height: number;
+	description: string;
+	imageSrc?: string;
+}

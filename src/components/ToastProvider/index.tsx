@@ -1,7 +1,6 @@
 import { useDocumentTitle } from "@/hook";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useTheme } from "@/store";
 import { twMerge } from "tailwind-merge";
 import { useShallow } from "zustand/react/shallow";
 
@@ -15,7 +14,6 @@ const contextClass = {
 
 export function ToastProvider() {
 	useDocumentTitle();
-	const [dgTheme] = useTheme(useShallow((stt) => [stt.theme]));
 
 	return (
 		<ToastContainer
@@ -27,7 +25,7 @@ export function ToastProvider() {
 			closeOnClick
 			rtl={false}
 			draggable
-			theme={dgTheme}
+			theme={"dark"}
 			stacked
 			limit={10}
 			toastClassName={(props) =>
