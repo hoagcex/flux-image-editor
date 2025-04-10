@@ -1,7 +1,7 @@
+import { ImageTemplates } from "@/common";
 import { AntdButton, TextAreaBase } from "@/components";
 import { FluxGenRequest } from "@/model";
-import { useGenLoadingImage } from "@/store";
-import { Switch, Typography } from "antd";
+import { useGenLoadingImage, useImagesTemplate } from "@/store";
 import { useState } from "react";
 import { Socket } from "socket.io-client";
 import { useShallow } from "zustand/react/shallow";
@@ -18,18 +18,22 @@ export const PromptForm = (props: PromptFormProps) => {
 		setEnhancePrompt(checked);
 	};
 
+	const [setImages, setStep] = useImagesTemplate(useShallow((stt) => [stt.setImages, stt.setStep]));
+
 	const { socket } = props;
 
 	const onSubmit = () => {
+		const imgTemplate = ImageTemplates[0];
 		const request: FluxGenRequest = {
 			prompt: prompt,
 			enhancePrompt: true,
 			edit: false,
-			width: 128,
-			height: 128,
+			width: imgTemplate.width,
+			height: imgTemplate.height,
 		};
-
 		socket.emit("flux-generate", JSON.stringify(request));
+		setImages([imgTemplate]);
+		setStep(1);
 		setLoading(true);
 	};
 

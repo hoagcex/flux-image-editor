@@ -1,3 +1,4 @@
+import { ImageTemplates } from "@/common";
 import { PromptForm } from "@/components";
 import { FluxGenerateResp, FluxGenRequest, FluxGenResponse } from "@/model";
 import { useGenLoadingImage, useImagesTemplate, useSelectedImage } from "@/store";
@@ -29,12 +30,18 @@ export const ImageGen = (props: ImageGenProps) => {
 	const [setImage] = useSelectedImage(useShallow((stt) => [stt.setImage]));
 
 	const [setLoading, setGen] = useGenLoadingImage(useShallow((stt) => [stt.setLoading, stt.setGen]));
+	const [step, setImageUrl, pushImage, increaseStep] = useImagesTemplate(
+		useShallow((stt) => [stt.step, stt.setImageUrl, stt.pushImage, stt.increaseStep]),
+	);
 	const promptRef = useRef("");
 	const stepRef = useRef(1);
 
 	useEffect(() => {
+		stepRef.current = step;
+	}, [step]);
+
+	useEffect(() => {
 		const onFluxGenerate = (res: FluxGenerateResp) => {
-			console.log("flux-generate", res);
 			if (res.status === false) {
 				setLoading(false);
 				return;
@@ -60,7 +67,7 @@ export const ImageGen = (props: ImageGenProps) => {
 	}, []);
 
 	const handleFluxEvent = (res: FluxGenResponse) => {
-		console.log("flux-msg", res);
+		// console.log("flux-msg", res);
 		if (res.socket_intention === "close") {
 			setLoading(false);
 			onContinueGen();
@@ -70,10 +77,13 @@ export const ImageGen = (props: ImageGenProps) => {
 			setProcess(round((res.gen_progress.current_percent ?? 0) * 100));
 			if (!isNil(res.gen_progress.preview)) {
 				setGenImg(res.gen_progress.preview);
+				setImageUrl(ImageTemplates[stepRef.current - 1].name, res.gen_progress.preview);
 			}
 		}
 		if (!isNil(res.image)) {
-			setGenImg(encodeURI(import.meta.env.REACT_APP_BASE_URL + res.image));
+			const url = encodeURI(import.meta.env.REACT_APP_BASE_URL + res.image);
+			setGenImg(url);
+			setImageUrl(ImageTemplates[stepRef.current - 1].name, url);
 		}
 	};
 
@@ -88,19 +98,22 @@ export const ImageGen = (props: ImageGenProps) => {
 	};
 
 	const onContinueGen = () => {
-		if (stepRef.current > 1) return;
+		if (stepRef.current > ImageTemplates.length - 1) return;
 		setTimeout(() => {
+			const imgTemplate = ImageTemplates[stepRef.current];
+
 			const request: FluxGenRequest = {
 				prompt: promptRef.current,
 				enhancePrompt: false,
 				edit: false,
-				width: 128 * 2,
-				height: 128 * 2,
+				width: imgTemplate.width,
+				height: imgTemplate.height,
 			};
 			console.log("onContinueGen-request", request);
 			socket.emit("flux-generate", JSON.stringify(request));
 
-			stepRef.current = stepRef.current + 1;
+			pushImage(ImageTemplates[stepRef.current]);
+			increaseStep();
 			setLoading(true);
 		}, 1000);
 
@@ -121,8 +134,9 @@ export const ImageGen = (props: ImageGenProps) => {
 						className={cn(
 							`border-[1px] border-solid border-[#d1d5db] dark:border-[#55585B]`,
 							`focus-within:border-primaryColor dark:focus-within:border-primaryColor`,
-							"min-h-[300px] overflow-y-scroll",
-							"w-[calc(100% - 2rem)] p-4 flex flex-wrap flex-row gap-y-4 justify-center",
+							// "min-h-[300px] overflow-y-scroll w-[calc(100% - 2rem)]",
+							"h-[250px] will-change-contents",
+							" p-4 flex flex-wrap flex-row gap-y-4 justify-center",
 						)}
 					>
 						{isEmpty(genImg) ? undefined : (
@@ -142,7 +156,7 @@ export const ImageGen = (props: ImageGenProps) => {
 								</Dropdown>
 							</div>
 						)}
-						<img src={genImg} className="w-auto h-full max-h-[512px] min-h-[512px]" />
+						<img src={genImg} className="h-[225px] w-auto" />
 					</div>
 					<Progress percent={process} status="active" />
 				</div>

@@ -90,40 +90,35 @@ export const useGenLoadingImage = create<GenLoadingStore>((set) => ({
 }));
 
 interface ImageTemplateProps {
+	step: number;
 	images?: ImageTemplate[];
+	setStep: (step: number) => void;
+	increaseStep: () => void;
 	setImages: (images?: ImageTemplate[]) => void;
+	setImageUrl: (imageName: string, imageUrl: string) => void;
 	pushImage: (image: ImageTemplate) => void;
 	clear: () => void;
 }
 
 export const useImagesTemplate = create<ImageTemplateProps>((set, get) => ({
-	images: [
-		{
-			name: "test",
-			width: 128,
-			height: 128,
-			description: "Test image",
-			imageSrc:
-				"https://flux.longerthanthelongest.com/View/local/raw/2025-04-09/0336-A%20photorealistic%20close-up%20of%20a%20single%20de-unknown-43.png",
-		},
-		{
-			name: "facebookCover",
-			width: 820,
-			height: 312,
-			description: "Ảnh bìa fanpage",
-			imageSrc:
-				"https://flux.longerthanthelongest.com/View/local/raw/2025-04-09/0336-A%20photorealistic%20close-up%20of%20a%20single%20de-unknown-43.png",
-		},
-		{
-			name: "zaloCover",
-			width: 1000,
-			height: 500,
-			description: "Ảnh bìa Zalo cá nhân",
-			imageSrc:
-				"https://flux.longerthanthelongest.com/View/local/raw/2025-04-09/0336-A%20photorealistic%20close-up%20of%20a%20single%20de-unknown-43.png",
-		},
-	],
+	step: 1,
+	images: [],
+	setStep(step: number) {
+		set({ step: step });
+	},
+	increaseStep() {
+		set({ step: get().step + 1 });
+	},
 	setImages(images?: ImageTemplate[]) {
+		set({ images: images });
+	},
+	setImageUrl(imageName: string, imageUrl: string) {
+		const images = get().images?.map((item) => {
+			if (item.name === imageName) {
+				return { ...item, imageSrc: imageUrl };
+			}
+			return item;
+		});
 		set({ images: images });
 	},
 	pushImage(image?: ImageTemplate) {
@@ -133,6 +128,6 @@ export const useImagesTemplate = create<ImageTemplateProps>((set, get) => ({
 		}
 	},
 	clear() {
-		set({ images: undefined });
+		set({ images: undefined, step: 1 });
 	},
 }));
