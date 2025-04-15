@@ -67,6 +67,7 @@ export interface FluxGenResponse {
 	gen_progress?: GenProcess;
 	keep_alive?: boolean;
 	socket_intention?: "close" | "open";
+	error?: string;
 }
 export interface GenProcess {
 	batch_index?: string;

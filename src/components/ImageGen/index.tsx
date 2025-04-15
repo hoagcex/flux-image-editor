@@ -42,6 +42,8 @@ export const ImageGen = (props: ImageGenProps) => {
 
 	useEffect(() => {
 		const onFluxGenerate = (res: FluxGenerateResp) => {
+			console.log("onFluxGenerate", res);
+
 			if (res.status === false) {
 				setLoading(false);
 				return;
@@ -67,10 +69,15 @@ export const ImageGen = (props: ImageGenProps) => {
 	}, []);
 
 	const handleFluxEvent = (res: FluxGenResponse) => {
-		// console.log("flux-msg", res);
+		console.log("flux-msg", res);
+		if (res.error) {
+			setLoading(false);
+			return;
+		}
 		if (res.socket_intention === "close") {
 			setLoading(false);
 			onContinueGen();
+			return;
 		}
 
 		if (!isNil(res.gen_progress)) {
